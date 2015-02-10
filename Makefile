@@ -1,11 +1,13 @@
 TARGET:=fastboot.bin
 TARGET_ELF:=$(patsubst %bin,%elf,${TARGET})
 
+CC:=${CROSS_COMPILE}gcc
 LD:=${CROSS_COMPILE}ld
 AS:=${CROSS_COMPILE}as
 OBJCOPY:=${CROSS_COMPILE}objcopy
 
-objs:=init.o
+
+objs:=init.o main.o
 
 all: ${TARGET}
 
@@ -18,3 +20,6 @@ ${TARGET_ELF}: ${objs} fastboot.lds
 	
 %.o: %.s
 	${AS} $< -o $@
+
+$.o: %.c
+	${CC} $< -o $@

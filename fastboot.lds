@@ -4,7 +4,7 @@ ENTRY(_start)
 
 MEMORY
 {
-ram(RW): 		ORIGIN = 0x80000000, LENGTH = 10M
+ram(RW): 		ORIGIN = 0x80108000, LENGTH = 10M
 }
 
 SECTIONS
@@ -23,4 +23,12 @@ SECTIONS
  	{
  		*(.data .data.*);
  	} > ram
+        
+        .stack (NOLOAD) :
+        {
+          _sstack = .;
+          . = . + 8000;
+          . = ALIGN(8);
+          _estack = .;
+        } > ram 
 }
