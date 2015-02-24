@@ -22,4 +22,4 @@ ${TARGET_ELF}: ${objs} fastboot.lds
 	${AS} $< -o $@
 
 $.o: %.c
-	${CC} $< -o $@
+	${CC} -g $< -o $@
