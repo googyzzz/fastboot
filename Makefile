@@ -7,7 +7,7 @@ AS:=${CROSS_COMPILE}as
 OBJCOPY:=${CROSS_COMPILE}objcopy
 
 
-objs:=init.o main.o
+objs:=init.o string_mod.o main.o
 
 all: ${TARGET}
 
