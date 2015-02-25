@@ -1,4 +1,4 @@
-#include <elf.h>
+#include "elf.h"
 #include "string_mod.h"
 
 static unsigned long load_elf_image_phdr(unsigned long addr);
