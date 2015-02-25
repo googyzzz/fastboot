@@ -7,6 +7,8 @@ AS:=${CROSS_COMPILE}as
 OBJCOPY:=${CROSS_COMPILE}objcopy
 
 
+CCFLAGS:= -marm -nostdinc -march=armv4 -mtune=arm7tdmi -ffunction-sections -fdata-sections -fno-common -msoft-float
+INCLUDES:=-Iinclude
 objs:=init.o string_mod.o main.o
 
 all: ${TARGET}
@@ -21,5 +23,9 @@ ${TARGET_ELF}: ${objs} fastboot.lds
 %.o: %.s
 	${AS} $< -o $@
 
-$.o: %.c
-	${CC} -g $< -o $@
+%.o: %.c
+	${CC} ${CCFLAGS} ${INCLUDES} -g -c $< -o $@
+
+.PHONY: clean        
+clean:
+	rm -f ${objs} ${TARGET} ${TARGET_ELF}
