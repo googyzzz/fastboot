@@ -9,7 +9,7 @@ OBJCOPY:=${CROSS_COMPILE}objcopy
 
 CCFLAGS:= -marm -nostdinc -march=armv4 -mtune=arm7tdmi -ffunction-sections -fdata-sections -fno-common -msoft-float
 INCLUDES:=-Iinclude
-objs:=init.o string_mod.o main.o
+objs:=init.o string_mod.o main.o hypervisor.elf.o
 
 all: ${TARGET}
 
@@ -25,6 +25,10 @@ ${TARGET_ELF}: ${objs} fastboot.lds
 
 %.o: %.c
 	${CC} ${CCFLAGS} ${INCLUDES} -g -c $< -o $@
+
+hypervisor.elf: ;
+hypervisor.elf.o: hypervisor.elf
+	${LD} -r -b binary -o $@ $<
 
 .PHONY: clean        
 clean:
