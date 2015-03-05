@@ -1,5 +1,3 @@
-typedef unsigned int u32;
-
 void udelay(unsigned int usec) {
     unsigned int time = 0, target_time = 0;
 
@@ -17,8 +15,8 @@ void udelay(unsigned int usec) {
 }
 
 void clock_set_enable(int periph_id, int enable) {
-    u32 clk;
-    u32 reg;
+    unsigned int clk;
+    unsigned int reg;
 
     /* Enable/disable the clock to this peripheral */
     if ((int) periph_id < (int) 96)
@@ -449,7 +447,7 @@ static signed char periph_id_to_internal_id[192] = {
 //47 52 99
 
 /* Returns  the clock source register for a peripheral */
-u32 get_periph_source_reg(int periph_id) {
+unsigned int get_periph_source_reg(int periph_id) {
     enum periphc_internal_id internal_id;
 
     /* Coresight is a special case */
@@ -466,8 +464,8 @@ u32 get_periph_source_reg(int periph_id) {
 }
 
 void clock_ll_set_source_divisor(int periph_id, unsigned source, unsigned divisor) {
-    u32 reg = get_periph_source_reg(periph_id);
-    u32 value;
+    unsigned int reg = get_periph_source_reg(periph_id);
+    unsigned int value;
 
     value = (*(volatile unsigned int *) (reg));
 
@@ -481,8 +479,8 @@ void clock_ll_set_source_divisor(int periph_id, unsigned source, unsigned diviso
 }
 
 void reset_set_enable(int periph_id, int enable) {
-    u32 reset;
-    u32 reg;
+    unsigned int reset;
+    unsigned int reg;
 
     /* Enable/disable reset to the peripheral */
     if (periph_id < 96)
@@ -592,7 +590,7 @@ static void enable_cpu_power_rail(void) {
 #define CLR_CPU3_CLK_STP        (1 << 11)
 
 static void enable_cpu_clocks(void) {
-    u32 reg;
+    unsigned int reg;
 
     /* Wait for PLL-X to lock */
     do {
@@ -618,7 +616,7 @@ static void enable_cpu_clocks(void) {
 }
 
 void clock_enable_coresight(int enable) {
-    u32 rst, src = 2;
+    unsigned int rst, src = 2;
 
     clock_set_enable(73, enable);
     reset_set_enable(73, !enable);
@@ -680,13 +678,13 @@ static void remove_cpu_resets(void) {
             | CLR_L2RESET | CLR_PRESETDBG;;
 }
 
-static int is_partition_powered(u32 partid) {
+static int is_partition_powered(unsigned int partid) {
     /* Get power gate status */
-    u32 reg = (*(volatile unsigned int *) (0x70000000 + 0xE400 + 0x38));
+    unsigned int reg = (*(volatile unsigned int *) (0x70000000 + 0xE400 + 0x38));
     return !!(reg & (1 << partid));
 }
 
-static void power_partition(u32 partid) {
+static void power_partition(unsigned int partid) {
     /* Is the partition already on? */
     if (!is_partition_powered(partid)) {
         /* No, toggle the partition power state (OFF -> ON) */
@@ -707,7 +705,7 @@ void tegra124_init_clocks(void) {
     (*(volatile unsigned int *) (0x60007000 + 0x2C)) &= ~(1 << 0); // Set active CPU cluster to G
 
     /* Change the oscillator drive strength */
-    u32 val = (*(volatile unsigned int *) (0x60006000 + 0x50));
+    unsigned int val = (*(volatile unsigned int *) (0x60006000 + 0x50));
     val &= ~(0x3F << 4);
     val |= (7 << 4);
     (*(volatile unsigned int *) (0x60006000 + 0x50)) = val;
@@ -791,7 +789,7 @@ void tegra124_init_clocks(void) {
     reset_set_enable(155, 0);
 }
 
-void start_cpu(u32 reset_vector) {
+void start_cpu(unsigned int reset_vector) {
     tegra124_init_clocks();
     /* Set power-gating timer multiplier */
 
@@ -808,9 +806,24 @@ void start_cpu(u32 reset_vector) {
     power_partition(15); //TODO Parameter prüfen gegen debugger
     /* Power up the fast cluster CPU0 partition */
     power_partition(14); //TODO Parameter prüfen gegen debugger
+
+    /* Power up the fast cluster CPU1 partition */
+    //power_partition(9); //TODO Parameter prüfen gegen debugger
+    /* Power up the fast cluster CPU2 partition */
+    //power_partition(10); //TODO Parameter prüfen gegen debugger
+    /* Power up the fast cluster CPU3 partition */
+    //power_partition(11); //TODO Parameter prüfen gegen debugger
+}
+
+void spin() {
+    for (;;) {
+        ;
+    }
 }
 
 int main(void) {
-    start_cpu(0x8000804C);
+    void (*fp)();
+    fp = &spin;
+    start_cpu((unsigned int)fp);
     return 0;
 }
