@@ -801,18 +801,18 @@ void start_cpu(unsigned int reset_vector) {
     (*(volatile unsigned int *) (0x6000F000 + 0x100)) = reset_vector;
 
     /* Power up the fast cluster rail partition */
-    power_partition(0); //TODO Parameter prüfen gegen debugger
+    power_partition(0);
     /* Power up the fast cluster non-CPU partition */
-    power_partition(15); //TODO Parameter prüfen gegen debugger
+    power_partition(15);
     /* Power up the fast cluster CPU0 partition */
-    power_partition(14); //TODO Parameter prüfen gegen debugger
+    power_partition(14);
 
     /* Power up the fast cluster CPU1 partition */
-    //power_partition(9); //TODO Parameter prüfen gegen debugger
+    //power_partition(9);
     /* Power up the fast cluster CPU2 partition */
-    //power_partition(10); //TODO Parameter prüfen gegen debugger
+    //power_partition(10);
     /* Power up the fast cluster CPU3 partition */
-    //power_partition(11); //TODO Parameter prüfen gegen debugger
+    //power_partition(11);
 }
 
 void spin() {
